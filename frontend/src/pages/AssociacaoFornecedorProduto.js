@@ -41,12 +41,12 @@ const AssociacaoFornecedorProduto = () => {
 
   return (
     <div>
-      {/* O Header foi removido daqui */}
-      
+      <h2>Associação de Fornecedor a Produto</h2>
+
       {product ? (
-        <div>
-          <div className="product-details">
-            <h2>{product.nome}</h2>
+        <div className="product-details">
+          <div>
+            <h3>Produto: {product.nome}</h3>
             <img src={product.imagem} alt={product.nome} />
             <p><strong>Código de Barras:</strong> {product.codigoBarras}</p>
             <p><strong>Descrição:</strong> {product.descricao}</p>
@@ -91,4 +91,5 @@ const AssociacaoFornecedorProduto = () => {
 };
 
 export default AssociacaoFornecedorProduto;
+
 

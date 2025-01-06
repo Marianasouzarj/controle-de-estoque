@@ -21,7 +21,7 @@ const CadastroFornecedor = () => {
 
   return (
     <div>
-      {/* O Header foi removido daqui */}
+      <h2>Cadastro de Fornecedor</h2>
       <form onSubmit={handleSubmit}>
         <label>Nome da Empresa</label>
         <input
@@ -83,3 +83,4 @@ const CadastroFornecedor = () => {
 };
 
 export default CadastroFornecedor;
+

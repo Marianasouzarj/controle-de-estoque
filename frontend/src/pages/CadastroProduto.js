@@ -21,7 +21,7 @@ const CadastroProduto = () => {
 
   return (
     <div>
-      {/* O Header foi removido daqui, pois já está no App.js */}
+      <h2>Cadastro de Produto</h2>
       <form onSubmit={handleSubmit}>
         <label>Nome do Produto</label>
         <input
@@ -78,4 +78,3 @@ const CadastroProduto = () => {
 };
 
 export default CadastroProduto;
-
