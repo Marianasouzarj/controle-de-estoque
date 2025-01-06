@@ -1,12 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
 // Importando as rotas
-const productRoutes = require('./routes/ProductRoutes');
-const supplierRoutes = require('./routes/SupplierRoutes');
-const associationRoutes = require('./routes/AssociationRoutes');
+const productRoutes = require('./routes/productRoutes');
+const supplierRoutes = require('./routes/supplierRoutes');
+const associationRoutes = require('./routes/associationRoutes');
 
 // Configuração do dotenv
 dotenv.config();
@@ -38,4 +39,6 @@ app.get('/', (req, res) => {
 
 // Iniciando o servidor
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
