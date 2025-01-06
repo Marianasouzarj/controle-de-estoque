@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
 
 const AssociacaoFornecedorProduto = () => {
   const [product, setProduct] = useState(null); // Dados do produto selecionado
@@ -42,8 +41,8 @@ const AssociacaoFornecedorProduto = () => {
 
   return (
     <div>
-      <Header title="Associação de Fornecedor a Produto" onBack={() => console.log('Voltar')} />
-
+      {/* O Header foi removido daqui */}
+      
       {product ? (
         <div>
           <div className="product-details">
@@ -92,3 +91,4 @@ const AssociacaoFornecedorProduto = () => {
 };
 
 export default AssociacaoFornecedorProduto;
+

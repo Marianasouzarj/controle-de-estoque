@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
 
 const CadastroProduto = () => {
   const [form, setForm] = useState({
@@ -22,7 +21,7 @@ const CadastroProduto = () => {
 
   return (
     <div>
-      <Header title="Cadastro de Produto" onBack={() => console.log('Voltar')} />
+      {/* O Header foi removido daqui, pois já está no App.js */}
       <form onSubmit={handleSubmit}>
         <label>Nome do Produto</label>
         <input
@@ -79,3 +78,4 @@ const CadastroProduto = () => {
 };
 
 export default CadastroProduto;
+

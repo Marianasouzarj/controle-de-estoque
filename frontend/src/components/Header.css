@@ -1,0 +1,42 @@
+/* Header.css */
+
+/* Header.css */
+.header nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+  }
+  
+  .header nav a:hover {
+    text-decoration: underline;
+  }
+
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e90ff; /* Azul */
+    color: #ffffff; /* Branco */
+    padding: 10px 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-title {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .header-back-button {
+    background-color: #ffffff;
+    color: #1e90ff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .header-back-button:hover {
+    background-color: #f0f0f0;
+  }
+  

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
 
 const CadastroFornecedor = () => {
   const [form, setForm] = useState({
@@ -22,7 +21,7 @@ const CadastroFornecedor = () => {
 
   return (
     <div>
-      <Header title="Cadastro de Fornecedor" onBack={() => console.log('Voltar')} />
+      {/* O Header foi removido daqui */}
       <form onSubmit={handleSubmit}>
         <label>Nome da Empresa</label>
         <input
