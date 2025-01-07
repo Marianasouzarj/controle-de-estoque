@@ -1,5 +1,5 @@
 const Association = require('../models/Association');
-const Product = require('../models/Product');
+const Product = require('../models/productModel');
 const Supplier = require('../models/Supplier');
 
 const AssociationController = {

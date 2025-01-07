@@ -14,9 +14,47 @@ const CadastroProduto = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Produto cadastrado:', form);
+
+    try {
+      const response = await fetch('http://localhost:5001/api/products/cadastro-produto', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.nome,
+          barcode: form.codigoBarras,
+          description: form.descricao,
+          stockQuantity: form.quantidade,
+          category: form.categoria,
+          expirationDate: form.validade,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Produto cadastrado com sucesso:', data);
+        alert('Produto cadastrado com sucesso!');
+        // Limpa o formulário após o cadastro
+        setForm({
+          nome: '',
+          codigoBarras: '',
+          descricao: '',
+          quantidade: '',
+          categoria: '',
+          validade: '',
+        });
+      } else {
+        const errorData = await response.json();
+        console.error('Erro ao cadastrar o produto:', errorData);
+        alert('Erro ao cadastrar o produto: ' + errorData.message);
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+      alert('Erro ao se comunicar com o servidor.');
+    }
   };
 
   return (
@@ -78,3 +116,4 @@ const CadastroProduto = () => {
 };
 
 export default CadastroProduto;
+
