@@ -10,18 +10,47 @@ const CadastroFornecedor = () => {
     contatoPrincipal: '',
   });
 
+  const [mensagem, setMensagem] = useState('');
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Fornecedor cadastrado:', form);
+
+    try {
+      const response = await fetch('http://localhost:5001/api/suppliers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      if (response.ok) {
+        setMensagem('Fornecedor cadastrado com sucesso!');
+        setForm({
+          nomeEmpresa: '',
+          cnpj: '',
+          endereco: '',
+          telefone: '',
+          email: '',
+          contatoPrincipal: '',
+        });
+      } else {
+        setMensagem('Erro ao cadastrar fornecedor. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro ao enviar dados para o backend:', error);
+      setMensagem('Erro ao conectar ao servidor.');
+    }
   };
 
   return (
     <div>
       <h2>Cadastro de Fornecedor</h2>
+      {mensagem && <p>{mensagem}</p>}
       <form onSubmit={handleSubmit}>
         <label>Nome da Empresa</label>
         <input
@@ -83,4 +112,5 @@ const CadastroFornecedor = () => {
 };
 
 export default CadastroFornecedor;
+
 
