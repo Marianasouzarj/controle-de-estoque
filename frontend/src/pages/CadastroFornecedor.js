@@ -2,22 +2,59 @@ import React, { useState } from 'react';
 
 const CadastroFornecedor = () => {
   const [form, setForm] = useState({
-    nomeEmpresa: '',
+    companyName: '', 
     cnpj: '',
-    endereco: '',
-    telefone: '',
+    fullAddress: '', 
+    contactPhone: '', 
     email: '',
-    contatoPrincipal: '',
+    mainContact: '', 
   });
 
   const [mensagem, setMensagem] = useState('');
+  const [erros, setErros] = useState({});
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const validarFormulario = () => {
+    const novosErros = {};
+
+    if (!form.companyName.trim()) {
+      novosErros.companyName = 'O nome da empresa é obrigatório.';
+    }
+
+    if (!form.cnpj.trim() || !/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(form.cnpj)) {
+      novosErros.cnpj = 'CNPJ inválido. Use o formato 00.000.000/0000-00.';
+    }
+
+    if (!form.fullAddress.trim()) {
+      novosErros.fullAddress = 'O endereço completo é obrigatório.';
+    }
+
+    if (!form.contactPhone.trim() || !/^\(\d{2}\)\s\d{4,5}-\d{4}$/.test(form.contactPhone)) {
+      novosErros.contactPhone = 'Telefone inválido. Use o formato (00) 0000-0000 ou (00) 90000-0000.';
+    }
+
+    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) {
+      novosErros.email = 'E-mail inválido.';
+    }
+
+    if (!form.mainContact.trim()) {
+      novosErros.mainContact = 'O contato principal é obrigatório.';
+    }
+
+    setErros(novosErros);
+    return Object.keys(novosErros).length === 0; 
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validarFormulario()) {
+      setMensagem('Por favor, corrija os erros no formulário.');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:5001/api/suppliers', {
@@ -31,13 +68,14 @@ const CadastroFornecedor = () => {
       if (response.ok) {
         setMensagem('Fornecedor cadastrado com sucesso!');
         setForm({
-          nomeEmpresa: '',
+          companyName: '',
           cnpj: '',
-          endereco: '',
-          telefone: '',
+          fullAddress: '',
+          contactPhone: '',
           email: '',
-          contatoPrincipal: '',
+          mainContact: '',
         });
+        setErros({});
       } else {
         setMensagem('Erro ao cadastrar fornecedor. Tente novamente.');
       }
@@ -55,12 +93,14 @@ const CadastroFornecedor = () => {
         <label>Nome da Empresa</label>
         <input
           type="text"
-          name="nomeEmpresa"
-          value={form.nomeEmpresa}
+          name="companyName"
+          value={form.companyName}
           onChange={handleChange}
           placeholder="Insira o nome da empresa"
           required
         />
+        {erros.companyName && <p style={{ color: 'red' }}>{erros.companyName}</p>}
+
         <label>CNPJ</label>
         <input
           type="text"
@@ -70,23 +110,29 @@ const CadastroFornecedor = () => {
           placeholder="00.000.000/0000-00"
           required
         />
-        <label>Endereço</label>
+        {erros.cnpj && <p style={{ color: 'red' }}>{erros.cnpj}</p>}
+
+        <label>Endereço Completo</label>
         <textarea
-          name="endereco"
-          value={form.endereco}
+          name="fullAddress"
+          value={form.fullAddress}
           onChange={handleChange}
           placeholder="Insira o endereço completo da empresa"
           required
         ></textarea>
+        {erros.fullAddress && <p style={{ color: 'red' }}>{erros.fullAddress}</p>}
+
         <label>Telefone</label>
         <input
           type="tel"
-          name="telefone"
-          value={form.telefone}
+          name="contactPhone"
+          value={form.contactPhone}
           onChange={handleChange}
           placeholder="(00) 0000-0000"
           required
         />
+        {erros.contactPhone && <p style={{ color: 'red' }}>{erros.contactPhone}</p>}
+
         <label>E-mail</label>
         <input
           type="email"
@@ -96,15 +142,19 @@ const CadastroFornecedor = () => {
           placeholder="exemplo@fornecedor.com"
           required
         />
+        {erros.email && <p style={{ color: 'red' }}>{erros.email}</p>}
+
         <label>Contato Principal</label>
         <input
           type="text"
-          name="contatoPrincipal"
-          value={form.contatoPrincipal}
+          name="mainContact"
+          value={form.mainContact}
           onChange={handleChange}
           placeholder="Nome do contato principal"
           required
         />
+        {erros.mainContact && <p style={{ color: 'red' }}>{erros.mainContact}</p>}
+
         <button type="submit">Cadastrar</button>
       </form>
     </div>
@@ -112,5 +162,4 @@ const CadastroFornecedor = () => {
 };
 
 export default CadastroFornecedor;
-
 
