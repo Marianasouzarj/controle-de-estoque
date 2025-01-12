@@ -4,57 +4,44 @@ const AssociacaoFornecedorProduto = () => {
   const [products, setProducts] = useState([]); // Lista de produtos
   const [selectedProduct, setSelectedProduct] = useState(null); // Produto selecionado
   const [suppliers, setSuppliers] = useState([]); // Lista de fornecedores
-  const [associatedSuppliers, setAssociatedSuppliers] = useState([]); // Fornecedores associados ao produto selecionado
+  const [associatedSuppliers, setAssociatedSuppliers] = useState([]); // Fornecedores associados
   const [selectedSupplier, setSelectedSupplier] = useState(''); // Fornecedor selecionado
   const [message, setMessage] = useState(''); // Mensagens de feedback
 
-  // Buscar produtos e fornecedores ao carregar a página
+  // Carregar lista de produtos e fornecedores ao montar o componente
   useEffect(() => {
-    // Buscar produtos do backend
     fetch('http://localhost:5001/api/products')
       .then((response) => response.json())
       .then((data) => setProducts(data))
       .catch((error) => console.error('Erro ao carregar produtos:', error));
 
-    // Buscar fornecedores do backend
+
     fetch('http://localhost:5001/api/suppliers')
       .then((response) => response.json())
       .then((data) => setSuppliers(data))
       .catch((error) => console.error('Erro ao carregar fornecedores:', error));
   }, []);
 
-  // Atualizar fornecedores associados ao selecionar um produto
+  // Atualizar fornecedores associados ao produto selecionado
   useEffect(() => {
     if (selectedProduct) {
-      // Buscar fornecedores associados ao produto selecionado
       fetch(`http://localhost:5001/api/products/${selectedProduct}/suppliers`)
         .then((response) => response.json())
         .then((data) => setAssociatedSuppliers(data))
-        .catch((error) => console.error('Erro ao carregar fornecedores associados:', error));
+        .catch((error) =>
+          console.error('Erro ao carregar fornecedores associados:', error)
+        );
     } else {
       setAssociatedSuppliers([]);
     }
   }, [selectedProduct]);
 
   const handleAssociate = () => {
-    if (!selectedProduct || !selectedSupplier) {
-      setMessage('Por favor, selecione um produto e um fornecedor antes de associar.');
+    if (!selectedSupplier) {
+      setMessage('Selecione um fornecedor para associar.');
       return;
     }
 
-    const supplier = suppliers.find((s) => s._id === selectedSupplier);
-
-    if (!supplier) {
-      setMessage('Fornecedor não encontrado.');
-      return;
-    }
-
-    if (associatedSuppliers.find((s) => s._id === supplier._id)) {
-      setMessage('Fornecedor já está associado a este produto!');
-      return;
-    }
-
-    // Associar fornecedor ao produto no backend
     fetch(`http://localhost:5001/api/products/${selectedProduct}/associate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -62,11 +49,12 @@ const AssociacaoFornecedorProduto = () => {
     })
       .then((response) => {
         if (response.ok) {
+          const supplier = suppliers.find((s) => s._id === selectedSupplier);
           setAssociatedSuppliers([...associatedSuppliers, supplier]);
-          setMessage('Fornecedor associado com sucesso ao produto!');
+          setMessage('Fornecedor associado com sucesso!');
           setSelectedSupplier('');
         } else {
-          setMessage('Erro ao associar fornecedor ao produto.');
+          setMessage('Erro ao associar fornecedor.');
         }
       })
       .catch((error) => console.error('Erro ao associar fornecedor:', error));
@@ -80,13 +68,17 @@ const AssociacaoFornecedorProduto = () => {
     })
       .then((response) => {
         if (response.ok) {
-          setAssociatedSuppliers(associatedSuppliers.filter((s) => s._id !== id));
+          setAssociatedSuppliers(
+            associatedSuppliers.filter((s) => s._id !== id)
+          );
           setMessage('Fornecedor desassociado com sucesso!');
         } else {
-          setMessage('Erro ao desassociar fornecedor do produto.');
+          setMessage('Erro ao desassociar fornecedor.');
         }
       })
-      .catch((error) => console.error('Erro ao desassociar fornecedor:', error));
+      .catch((error) =>
+        console.error('Erro ao desassociar fornecedor:', error)
+      );
   };
 
   return (
@@ -109,48 +101,97 @@ const AssociacaoFornecedorProduto = () => {
         </select>
       </div>
 
-      {/* Mostrar fornecedores e associações somente se um produto for selecionado */}
+      {/* Exibição de informações do produto */}
       {selectedProduct && (
-        <>
-          {/* Seleção de Fornecedor */}
-          <div className="associate-supplier">
-            <h3>Associação de Fornecedor</h3>
-            <select
-              value={selectedSupplier}
-              onChange={(e) => setSelectedSupplier(e.target.value)}
-            >
-              <option value="">Selecione um fornecedor</option>
-              {suppliers.map((supplier) => (
-                <option key={supplier._id} value={supplier._id}>
-                  {supplier.companyName}
-                </option>
-              ))}
-            </select>
-            <button onClick={handleAssociate}>Associar Fornecedor</button>
+        <div className="product-info">
+          <h3>Informações do Produto</h3>
+          <div>
+            <label>Nome:</label>
+            <input
+              type="text"
+              value={
+                products.find((product) => product._id === selectedProduct)
+                  ?.name || ''
+              }
+              readOnly
+            />
           </div>
-
-          {/* Lista de Fornecedores Associados */}
-          <div className="associated-suppliers">
-            <h3>Fornecedores Associados</h3>
-            <ul>
-              {associatedSuppliers.map((supplier) => (
-                <li key={supplier._id}>
-                  <span>
-                    <strong>Nome:</strong> {supplier.companyName} | <strong>CNPJ:</strong> {supplier.cnpj}
-                  </span>
-                  <button onClick={() => handleDissociate(supplier._id)}>Desassociar</button>
-                </li>
-              ))}
-            </ul>
+          <div>
+            <label>Código de Barras:</label>
+            <input
+              type="text"
+              value={
+                products.find((product) => product._id === selectedProduct)
+                  ?.barcode || ''
+              }
+              readOnly
+            />
           </div>
-        </>
+          <div>
+            <label>Descrição:</label>
+            <textarea
+              value={
+                products.find((product) => product._id === selectedProduct)
+                  ?.description || ''
+              }
+              readOnly
+            ></textarea>
+          </div>
+        </div>
       )}
 
-      {/* Exibir mensagens de feedback */}
+      {/* Seleção de Fornecedor */}
+      {selectedProduct && (
+        <div className="associate-supplier">
+          <h3>Associação de Fornecedor</h3>
+          <select
+            value={selectedSupplier}
+            onChange={(e) => setSelectedSupplier(e.target.value)}
+          >
+            <option value="">Selecione um fornecedor</option>
+            {suppliers.map((supplier) => (
+              <option key={supplier._id} value={supplier._id}>
+                {supplier.companyName}
+              </option>
+            ))}
+          </select>
+          <button onClick={handleAssociate}>Associar Fornecedor</button>
+        </div>
+      )}
+
+      {/* Lista de Fornecedores Associados */}
+      {selectedProduct && associatedSuppliers.length > 0 && (
+        <div className="associated-suppliers">
+          <h3>Fornecedores Associados</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>CNPJ</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {associatedSuppliers.map((supplier) => (
+                <tr key={supplier._id}>
+                  <td>{supplier.companyName}</td>
+                  <td>{supplier.cnpj}</td>
+                  <td>
+                    <button onClick={() => handleDissociate(supplier._id)}>
+                      Desassociar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Mensagem de Feedback */}
       {message && <p style={{ color: 'blue' }}>{message}</p>}
     </div>
   );
 };
 
 export default AssociacaoFornecedorProduto;
-

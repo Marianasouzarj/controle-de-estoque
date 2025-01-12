@@ -1,166 +1,118 @@
 import React, { useState } from 'react';
 
-const CadastroFornecedor = () => {
+const CadastroProduto = () => {
   const [form, setForm] = useState({
-    companyName: '', // Alinhado ao modelo do Mongoose
-    cnpj: '',
-    fullAddress: '', // Alinhado ao modelo do Mongoose
-    contactPhone: '', // Alinhado ao modelo do Mongoose
-    email: '',
-    mainContact: '', // Alinhado ao modelo do Mongoose
+    nome: '',
+    codigoBarras: '',
+    descricao: '',
+    quantidade: '',
+    categoria: '',
+    validade: '',
   });
-
-  const [mensagem, setMensagem] = useState('');
-  const [erros, setErros] = useState({});
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const validarFormulario = () => {
-    const novosErros = {};
-
-    if (!form.companyName.trim()) {
-      novosErros.companyName = 'O nome da empresa é obrigatório.';
-    }
-
-    if (!form.cnpj.trim() || !/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(form.cnpj)) {
-      novosErros.cnpj = 'CNPJ inválido. Use o formato 00.000.000/0000-00.';
-    }
-
-    if (!form.fullAddress.trim()) {
-      novosErros.fullAddress = 'O endereço completo é obrigatório.';
-    }
-
-    if (!form.contactPhone.trim() || !/^\(\d{2}\)\s\d{4,5}-\d{4}$/.test(form.contactPhone)) {
-      novosErros.contactPhone = 'Telefone inválido. Use o formato (00) 0000-0000 ou (00) 90000-0000.';
-    }
-
-    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) {
-      novosErros.email = 'E-mail inválido.';
-    }
-
-    if (!form.mainContact.trim()) {
-      novosErros.mainContact = 'O contato principal é obrigatório.';
-    }
-
-    setErros(novosErros);
-    return Object.keys(novosErros).length === 0; // Retorna true se não houver erros
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validarFormulario()) {
-      setMensagem('Por favor, corrija os erros no formulário.');
-      return;
-    }
-
     try {
-      const response = await fetch('http://localhost:5001/api/suppliers', {
+      const response = await fetch('http://localhost:5001/api/products/cadastro-produto', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          name: form.nome,
+          barcode: form.codigoBarras,
+          description: form.descricao,
+          stockQuantity: form.quantidade,
+          category: form.categoria,
+          expirationDate: form.validade,
+        }),
       });
 
       if (response.ok) {
-        setMensagem('Fornecedor cadastrado com sucesso!');
+        const data = await response.json();
+        console.log('Produto cadastrado com sucesso:', data);
+        alert('Produto cadastrado com sucesso!');
+        // Limpa o formulário após o cadastro
         setForm({
-          companyName: '',
-          cnpj: '',
-          fullAddress: '',
-          contactPhone: '',
-          email: '',
-          mainContact: '',
+          nome: '',
+          codigoBarras: '',
+          descricao: '',
+          quantidade: '',
+          categoria: '',
+          validade: '',
         });
-        setErros({});
       } else {
-        setMensagem('Erro ao cadastrar fornecedor. Tente novamente.');
+        const errorData = await response.json();
+        console.error('Erro ao cadastrar o produto:', errorData);
+        alert('Erro ao cadastrar o produto: ' + errorData.message);
       }
     } catch (error) {
-      console.error('Erro ao enviar dados para o backend:', error);
-      setMensagem('Erro ao conectar ao servidor.');
+      console.error('Erro na requisição:', error);
+      alert('Erro ao se comunicar com o servidor.');
     }
   };
 
   return (
     <div>
-      <h2>Cadastro de Fornecedor</h2>
-      {mensagem && <p>{mensagem}</p>}
+      <h2>Cadastro de Produto</h2>
       <form onSubmit={handleSubmit}>
-        <label>Nome da Empresa</label>
+        <label>Nome do Produto</label>
         <input
           type="text"
-          name="companyName"
-          value={form.companyName}
+          name="nome"
+          value={form.nome}
           onChange={handleChange}
-          placeholder="Insira o nome da empresa"
+          placeholder="Insira o nome do produto"
           required
         />
-        {erros.companyName && <p style={{ color: 'red' }}>{erros.companyName}</p>}
-
-        <label>CNPJ</label>
+        <label>Código de Barras</label>
         <input
           type="text"
-          name="cnpj"
-          value={form.cnpj}
+          name="codigoBarras"
+          value={form.codigoBarras}
           onChange={handleChange}
-          placeholder="00.000.000/0000-00"
-          required
+          placeholder="Insira o código de barras"
         />
-        {erros.cnpj && <p style={{ color: 'red' }}>{erros.cnpj}</p>}
-
-        <label>Endereço Completo</label>
+        <label>Descrição</label>
         <textarea
-          name="fullAddress"
-          value={form.fullAddress}
+          name="descricao"
+          value={form.descricao}
           onChange={handleChange}
-          placeholder="Insira o endereço completo da empresa"
+          placeholder="Descreva brevemente o produto"
           required
         ></textarea>
-        {erros.fullAddress && <p style={{ color: 'red' }}>{erros.fullAddress}</p>}
-
-        <label>Telefone</label>
+        <label>Quantidade</label>
         <input
-          type="tel"
-          name="contactPhone"
-          value={form.contactPhone}
+          type="number"
+          name="quantidade"
+          value={form.quantidade}
           onChange={handleChange}
-          placeholder="(00) 0000-0000"
-          required
+          placeholder="Quantidade disponível"
         />
-        {erros.contactPhone && <p style={{ color: 'red' }}>{erros.contactPhone}</p>}
-
-        <label>E-mail</label>
+        <label>Categoria</label>
+        <select name="categoria" value={form.categoria} onChange={handleChange} required>
+          <option value="">Selecione uma categoria</option>
+          <option value="Eletrônicos">Eletrônicos</option>
+          <option value="Alimentos">Alimentos</option>
+          <option value="Vestuário">Vestuário</option>
+          <option value="Outro">Outro</option>
+        </select>
+        <label>Data de Validade</label>
         <input
-          type="email"
-          name="email"
-          value={form.email}
+          type="date"
+          name="validade"
+          value={form.validade}
           onChange={handleChange}
-          placeholder="exemplo@fornecedor.com"
-          required
         />
-        {erros.email && <p style={{ color: 'red' }}>{erros.email}</p>}
-
-        <label>Contato Principal</label>
-        <input
-          type="text"
-          name="mainContact"
-          value={form.mainContact}
-          onChange={handleChange}
-          placeholder="Nome do contato principal"
-          required
-        />
-        {erros.mainContact && <p style={{ color: 'red' }}>{erros.mainContact}</p>}
-
         <button type="submit">Cadastrar</button>
       </form>
     </div>
   );
 };
 
-export default CadastroFornecedor;
-
-
+export default CadastroProduto;
